@@ -9,9 +9,4 @@ public class AssociadoResponseDTO {
     private String nome;
     private String cpf;
 
-    public AssociadoResponseDTO(Associado associado) {
-        this.id = associado.getId();
-        this.nome = associado.getNome();
-        this.cpf = associado.getCpf();
-    }
 }

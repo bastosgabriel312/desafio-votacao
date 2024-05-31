@@ -1,10 +1,7 @@
 package br.com.db.desafio_votacao.api.v1.dto.mapper;
 
-import br.com.db.desafio_votacao.api.v1.dto.PautaDTO;
 import br.com.db.desafio_votacao.api.v1.dto.VotoDTO;
-import br.com.db.desafio_votacao.api.v1.dto.response.PautaResponseDTO;
 import br.com.db.desafio_votacao.api.v1.dto.response.VotoResponseDTO;
-import br.com.db.desafio_votacao.model.Pauta;
 import br.com.db.desafio_votacao.model.Voto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

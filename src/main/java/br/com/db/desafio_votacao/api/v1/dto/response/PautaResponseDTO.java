@@ -7,4 +7,7 @@ public class PautaResponseDTO {
     private Long id;
     private String titulo;
     private String descricao;
+    private boolean ativa;
+    private Long quantidadeVotosSim;
+    private Long quantidadeVotosNao;
 }

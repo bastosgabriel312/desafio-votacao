@@ -5,7 +5,6 @@ import br.com.db.desafio_votacao.api.v1.dto.SessaoVotacaoDTO;
 import br.com.db.desafio_votacao.api.v1.dto.mapper.SessaoVotacaoMapper;
 import br.com.db.desafio_votacao.api.v1.dto.response.SessaoVotacaoResponseDTO;
 import br.com.db.desafio_votacao.exception.ResourceNotFoundException;
-import br.com.db.desafio_votacao.model.Associado;
 import br.com.db.desafio_votacao.model.Pauta;
 import br.com.db.desafio_votacao.model.SessaoVotacao;
 import br.com.db.desafio_votacao.repository.PautaRepository;
@@ -36,6 +35,9 @@ public class SessaoVotacaoServiceV1Impl implements SessaoVotacaoService {
     @Autowired
     private PautaRepository pautaRepository;
 
+    @Autowired
+    private PautaServiceV1Impl pautaServiceV1;
+
     @Scheduled(fixedRate = 1000) // Executa a cada segundo
     @Override
     public void verificarSessoes() {
@@ -43,6 +45,7 @@ public class SessaoVotacaoServiceV1Impl implements SessaoVotacaoService {
         sessoes.forEach(sessaoVotacao -> {
             sessaoVotacao.setAtiva(false);
             sessaoVotacaoRepository.save(sessaoVotacao);
+            pautaServiceV1.encerrarSessaoVotacao(sessaoVotacao);
             logger.debug("Encerrando sessão: {}", sessaoVotacao);
         });
     }
@@ -51,10 +54,11 @@ public class SessaoVotacaoServiceV1Impl implements SessaoVotacaoService {
         Pauta pauta = pautaRepository.findById(sessaoVotacaoDTO.getPautaId()).orElseThrow(()-> new ResourceNotFoundException(Pauta.class));
         SessaoVotacao sessaoVotacao = new SessaoVotacao();
         sessaoVotacao.setDataInicio(LocalDateTime.now());
-        sessaoVotacao.setDataFim(LocalDateTime.now().plusMinutes(1));
+        sessaoVotacao.setDataFim(sessaoVotacaoDTO.getTempoEmSegundos() != null ? LocalDateTime.now().plusSeconds(sessaoVotacaoDTO.getTempoEmSegundos()) : LocalDateTime.now().plusMinutes(1));
         sessaoVotacao.setAtiva(true);
         sessaoVotacao.setPauta(pauta);
         SessaoVotacao sessaoVotacaoSalva = sessaoVotacaoRepository.save(sessaoVotacao);
+        logger.debug("Abrindo uma nova sessão de votação: {}", sessaoVotacaoDTO);
         return sessaoVotacaoMapper.toDto(sessaoVotacaoSalva);
     }
 

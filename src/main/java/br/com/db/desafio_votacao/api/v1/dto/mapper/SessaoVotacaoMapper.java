@@ -3,7 +3,6 @@ package br.com.db.desafio_votacao.api.v1.dto.mapper;
 import br.com.db.desafio_votacao.api.v1.dto.SessaoVotacaoDTO;
 import br.com.db.desafio_votacao.api.v1.dto.response.SessaoVotacaoResponseDTO;
 import br.com.db.desafio_votacao.model.SessaoVotacao;
-import br.com.db.desafio_votacao.model.Voto;
 import org.mapstruct.Mapper;
 
 import java.util.List;
