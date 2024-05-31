@@ -1,117 +1,87 @@
-# Votação
+# Desafio Votação
 
-## Objetivo
+Neste projeto, foram desenvolvidos diversos controllers e serviços para gerenciar diferentes entidades relacionadas ao sistema de votação. Abaixo, estão as explicações de cada controller e como funciona o agendamento de tarefas com Spring Schedule.
 
-No cooperativismo, cada associado possui um voto e as decisões são tomadas em assembleias, por votação. Imagine que você deve criar uma solução para dispositivos móveis para gerenciar e participar dessas sessões de votação.
-Essa solução deve ser executada na nuvem e promover as seguintes funcionalidades através de uma API REST:
+## Iniciando a Aplicação Localmente
 
-- Cadastrar uma nova pauta
-- Abrir uma sessão de votação em uma pauta (a sessão de votação deve ficar aberta por
-  um tempo determinado na chamada de abertura ou 1 minuto por default)
-- Receber votos dos associados em pautas (os votos são apenas 'Sim'/'Não'. Cada associado
-  é identificado por um id único e pode votar apenas uma vez por pauta)
-- Contabilizar os votos e dar o resultado da votação na pauta
+Para acessar a documentação da API, siga os passos abaixo:
 
-Para fins de exercício, a segurança das interfaces pode ser abstraída e qualquer chamada para as interfaces pode ser considerada como autorizada. A solução deve ser construída em java, usando Spring-boot, mas os frameworks e bibliotecas são de livre escolha (desde que não infrinja direitos de uso).
+1. Acesse o diretório `/docker` e execute o comando `docker-compose up` para iniciar o banco de dados.
+2. Em seguida em outro terminal, execute o comando `mvn clean install` para buildar o projeto.
+3. Por fim, inicie a aplicação Spring executando a classe `DesafioVotacaoApplication`.
 
-É importante que as pautas e os votos sejam persistidos e que não sejam perdidos com o restart da aplicação.
+Após seguir esses passos, você poderá acessar a documentação da API por meio do seguinte link: [http://localhost:8080/desafioVotacao/swagger-ui/index.html#/](http://localhost:8080/desafioVotacao/swagger-ui/index.html#/)
 
-O foco dessa avaliação é a comunicação entre o backend e o aplicativo mobile. Essa comunicação é feita através de mensagens no formato JSON, onde essas mensagens serão interpretadas pelo cliente para montar as telas onde o usuário vai interagir com o sistema. A aplicação cliente não faz parte da avaliação, apenas os componentes do servidor. O formato padrão dessas mensagens será detalhado no anexo 1.
+## Controllers
 
-## Como proceder
+### AssociadoController
 
-Por favor, realize o FORK desse repositório e implemente sua solução no FORK em seu repositório GItHub, ao final, notifique da conclusão para que possamos analisar o código implementado.
+Este controller é responsável por lidar com as operações relacionadas aos associados do sistema de votação.
 
-Lembre de deixar todas as orientações necessárias para executar o seu código.
+- **`POST /desafioVotacao/api/v1/associados`:** Cria um novo associado.
+- **`GET /desafioVotacao/api/v1/associados`:** Lista todos os associados cadastrados.
+- **`GET /desafioVotacao/api/v1/associados/{id}`:** Busca um associado pelo ID.
 
-### Tarefas bônus
+### PautaController
 
-- Tarefa Bônus 1 - Integração com sistemas externos
-  - Criar uma Facade/Client Fake que retorna aleátoriamente se um CPF recebido é válido ou não.
-  - Caso o CPF seja inválido, a API retornará o HTTP Status 404 (Not found). Você pode usar geradores de CPF para gerar CPFs válidos
-  - Caso o CPF seja válido, a API retornará se o usuário pode (ABLE_TO_VOTE) ou não pode (UNABLE_TO_VOTE) executar a operação. Essa operação retorna resultados aleatórios, portanto um mesmo CPF pode funcionar em um teste e não funcionar no outro.
+O PautaController gerencia as operações relacionadas às pautas das sessões de votação.
 
-```
-// CPF Ok para votar
-{
-    "status": "ABLE_TO_VOTE
-}
-// CPF Nao Ok para votar - retornar 404 no client tb
-{
-    "status": "UNABLE_TO_VOTE
-}
-```
+- **`POST /desafioVotacao/api/v1/pautas`:** Cria uma nova pauta.
+- **`GET /desafioVotacao/api/v1/pautas`:** Lista todas as pautas cadastradas.
+- **`GET /desafioVotacao/api/v1/pautas/{id}`:** Busca uma pauta pelo ID.
 
-Exemplos de retorno do serviço
+### SessaoVotacaoController
 
-### Tarefa Bônus 2 - Performance
+Este controller lida com as operações relacionadas às sessões de votação.
 
-- Imagine que sua aplicação possa ser usada em cenários que existam centenas de
-  milhares de votos. Ela deve se comportar de maneira performática nesses
-  cenários
-- Testes de performance são uma boa maneira de garantir e observar como sua
-  aplicação se comporta
+- **`POST /desafioVotacao/api/v1/sessoes`:** Abre uma nova sessão de votação.
+- **`GET /desafioVotacao/api/v1/sessoes`:** Lista todas as sessões de votação.
+- **`GET /desafioVotacao/api/v1/sessoes/{id}`:** Busca uma sessão de votação pelo ID.
 
-### Tarefa Bônus 3 - Versionamento da API
+### VotoController
 
-○ Como você versionaria a API da sua aplicação? Que estratégia usar?
+O VotoController é responsável por gerenciar as operações relacionadas aos votos dos associados.
 
-## O que será analisado
+- **`POST /desafioVotacao/api/v1/votos`:** Registra um novo voto.
+- **`GET /desafioVotacao/api/v1/votos`:** Lista todos os votos cadastrados.
+- **`GET /desafioVotacao/api/v1/votos/{id}`:** Busca um voto pelo ID.
 
-- Simplicidade no design da solução (evitar over engineering)
-- Organização do código
-- Arquitetura do projeto
-- Boas práticas de programação (manutenibilidade, legibilidade etc)
-- Possíveis bugs
-- Tratamento de erros e exceções
-- Explicação breve do porquê das escolhas tomadas durante o desenvolvimento da solução
-- Uso de testes automatizados e ferramentas de qualidade
-- Limpeza do código
-- Documentação do código e da API
-- Logs da aplicação
-- Mensagens e organização dos commits
+## Spring Schedule
 
-## Dicas
+O agendamento de tarefas é feito utilizando a anotação `@Scheduled` do Spring Framework. No método `verificarSessoes()`, é agendada uma tarefa que executa a cada segundo para verificar se há sessões de votação ativas que já expiraram. Caso existam, essas sessões são encerradas automaticamente.
 
-- Teste bem sua solução, evite bugs
-- Deixe o domínio das URLs de callback passiveis de alteração via configuração, para facilitar
-  o teste tanto no emulador, quanto em dispositivos fisicos.
-  Observações importantes
-- Não inicie o teste sem sanar todas as dúvidas
-- Iremos executar a aplicação para testá-la, cuide com qualquer dependência externa e
-  deixe claro caso haja instruções especiais para execução do mesmo
-  Classificação da informação: Uso Interno
-
-## Anexo 1
-
-### Introdução
-
-A seguir serão detalhados os tipos de tela que o cliente mobile suporta, assim como os tipos de campos disponíveis para a interação do usuário.
-
-### Tipo de tela – FORMULARIO
-
-A tela do tipo FORMULARIO exibe uma coleção de campos (itens) e possui um ou dois botões de ação na parte inferior.
-
-O aplicativo envia uma requisição POST para a url informada e com o body definido pelo objeto dentro de cada botão quando o mesmo é acionado. Nos casos onde temos campos de entrada
-de dados na tela, os valores informados pelo usuário são adicionados ao corpo da requisição. Abaixo o exemplo da requisição que o aplicativo vai fazer quando o botão “Ação 1” for acionado:
-
-```
-POST http://seudominio.com/ACAO1
-{
-    “campo1”: “valor1”,
-    “campo2”: 123,
-    “idCampoTexto”: “Texto”,
-    “idCampoNumerico: 999
-    “idCampoData”: “01/01/2000”
+```java
+@Scheduled(fixedRate = 1000) // Executa a cada segundo
+@Override
+public void verificarSessoes() {
+    List<SessaoVotacao> sessoes = sessaoVotacaoRepository.findAllByDataFimBeforeAndAtiva(LocalDateTime.now(), true);
+    sessoes.forEach(sessaoVotacao -> {
+        sessaoVotacao.setAtiva(false);
+        sessaoVotacaoRepository.save(sessaoVotacao);
+        pautaServiceV1.encerrarSessaoVotacao(sessaoVotacao);
+        logger.debug("Encerrando sessão: {}", sessaoVotacao);
+    });
 }
 ```
+# Resultados de Performance
 
-Obs: o formato da url acima é meramente ilustrativo e não define qualquer padrão de formato.
+Na pasta `/results`, estão armazenados os resultados dos testes de performance realizados. Abaixo, estão os resultados obtidos:
 
-### Tipo de tela – SELECAO
+```plaintext
+Benchmark                                                       Mode  Cnt    Score   Error  Units
+AssociadoServicePerformanceTest.testSalvarAssociadoPerformance  avgt    5    0,576 ± 2,516  ms/op
+PautaServicePerformanceTest.testSalvarPautaPerformance          avgt    5    1,614 ± 5,911  ms/op
+SessaoVotacaoServicePerformanceTest.testAbrirSessaoPerformance  avgt    5    1,280 ± 4,677  ms/op
+VotoServicePerformanceTest.testSalvarVotoPerformance            avgt    5    1,444 ± 4,959  ms/op
+VotoServicePerformanceTest.testSalvarMilVotosNao                  ss       416,945          ms/op
+VotoServicePerformanceTest.testSalvarMilVotosSim                  ss       435,578          ms/op
+```
 
-A tela do tipo SELECAO exibe uma lista de opções para que o usuário.
+## Interpretação dos Resultados
+    AssociadoServicePerformanceTest: O tempo médio para salvar um associado foi de aproximadamente 0,576 ms.
+    PautaServicePerformanceTest: O tempo médio para salvar uma pauta foi de aproximadamente 1,614 ms.
+    SessaoVotacaoServicePerformanceTest: O tempo médio para abrir uma sessão de votação foi de aproximadamente 1,280 ms.
+    VotoServicePerformanceTest (Salvar Voto): O tempo médio para salvar um voto foi de aproximadamente 1,444 ms.
+    VotoServicePerformanceTest (Salvar Mil Votos Não): O tempo para salvar mil votos "Não" foi de aproximadamente 416,945 ms.
+    VotoServicePerformanceTest (Salvar Mil Votos Sim): O tempo para salvar mil votos "Sim" foi de aproximadamente 435,578 ms.
 
-O aplicativo envia uma requisição POST para a url informada e com o body definido pelo objeto dentro de cada item da lista de seleção, quando o mesmo é acionado, semelhando ao funcionamento dos botões da tela FORMULARIO.
-
-# desafio-votacao
