@@ -1,0 +1,7 @@
+Benchmark                                                       Mode  Cnt    Score   Error  Units
+AssociadoServicePerformanceTest.testSalvarAssociadoPerformance  avgt    5    0,576 ± 2,516  ms/op
+PautaServicePerformanceTest.testSalvarPautaPerformance          avgt    5    1,614 ± 5,911  ms/op
+SessaoVotacaoServicePerformanceTest.testAbrirSessaoPerformance  avgt    5    1,280 ± 4,677  ms/op
+VotoServicePerformanceTest.testSalvarVotoPerformance            avgt    5    1,444 ± 4,959  ms/op
+VotoServicePerformanceTest.testSalvarMilVotosNao                  ss       416,945          ms/op
+VotoServicePerformanceTest.testSalvarMilVotosSim                  ss       435,578          ms/op
